@@ -1,26 +1,29 @@
+# Use the official Node.js 20 image as the base image
 FROM node:20
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
 # Install ffmpeg
 RUN apt-get update && apt-get install -y ffmpeg
 
-# Copy root package.json and lockfile
-COPY package.json ./
-COPY package-lock.json ./
+# Copy the root package.json and package-lock.json files
+COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy app source
+# Copy the rest of the application source code
 COPY . .
 
-# Ensure the application listens on port 8080
+# Build the TypeScript code
+RUN npm run build
+
+# Set the environment variable for the port
 ENV PORT 8080
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Start the application
-CMD [ "npm", "run", "start-app" ]
+CMD ["npm", "run", "serve"]
